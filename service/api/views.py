@@ -39,15 +39,15 @@ async def get_reco(
 
     # Model reco start
     model = validator.get_reco_model(model_name)
+    if user_id > 10**9:
+        raise UserNotFoundError(error_message=f"User {user_id} not found")
     if model is None:
         raise ModelNotFoundError(error_message=f"Model {model_name} not found")
     else:
         reco = model.recommend(user_id)
-    if user_id > 10**9:
-        raise UserNotFoundError(error_message=f"User {user_id} not found")
-
-    k_recs = request.app.state.k_recs
-    print(k_recs)
+    
+    # k_recs = request.app.state.k_recs
+    print(reco)
     # reco = list(range(k_recs))
     return RecoResponse(user_id=user_id, items=reco)
 
