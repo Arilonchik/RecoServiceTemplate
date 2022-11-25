@@ -28,12 +28,11 @@ validator = ModelValidator()
 
 security_scheme = HTTPBearer()
 API_KEY = os.getenv("API_KEY")
-# print(API_KEY)
 
 
 async def check_key(
     key: HTTPAuthorizationCredentials = Security(security_scheme),
-):
+) -> str:
     if key.credentials == API_KEY:
         return key.credentials
     raise NotAuthorizedError()
