@@ -12,9 +12,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.8"
-      - env:
-          API_KEY: ${{secrets.API_KEY}}
       - run: pip install poetry
       - run: make setup
       - run: make lint
-      - run: make test
+      - env:
+          API_KEY: ${{secrets.API_KEY}}  
+        run: make test
