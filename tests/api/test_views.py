@@ -1,6 +1,7 @@
 import os
 from http import HTTPStatus
 
+from requests.structures import CaseInsensitiveDict
 from starlette.testclient import TestClient
 
 from service.settings import ServiceConfig
@@ -22,7 +23,9 @@ def test_get_reco_success(
 ) -> None:
     user_id = 123
     path = GET_RECO_PATH.format(model_name="plug", user_id=user_id)
-    client.headers = {"Authorization": f"Bearer {os.getenv('API_KEY')}"}
+    client.headers = CaseInsensitiveDict(
+        {"Authorization": f"Bearer {os.getenv('API_KEY')}"}
+    )
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.OK
@@ -37,7 +40,9 @@ def test_get_reco_for_unknown_user(
 ) -> None:
     user_id = 10**10
     path = GET_RECO_PATH.format(model_name="plug", user_id=user_id)
-    client.headers = {"Authorization": f"Bearer {os.getenv('API_KEY')}"}
+    client.headers = CaseInsensitiveDict(
+        {"Authorization": f"Bearer {os.getenv('API_KEY')}"}
+    )
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -49,7 +54,9 @@ def test_get_reco_for_unknown_model(
 ) -> None:
     user_id = 1
     path = GET_RECO_PATH.format(model_name="some_model", user_id=user_id)
-    client.headers = {"Authorization": f"Bearer {os.getenv('API_KEY')}"}
+    client.headers = CaseInsensitiveDict(
+        {"Authorization": f"Bearer {os.getenv('API_KEY')}"}
+    )
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -61,7 +68,9 @@ def test_get_reco_unauthorized(
 ) -> None:
     user_id = 1
     path = GET_RECO_PATH.format(model_name="plug", user_id=user_id)
-    client.headers = {"Authorization": "Bearer wrongkey"}
+    client.headers = CaseInsensitiveDict(
+        {"Authorization": "Bearer wrongkey"}
+    )
     with client:
         response = client.get(path)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
