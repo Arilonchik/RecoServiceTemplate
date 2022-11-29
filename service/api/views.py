@@ -67,8 +67,7 @@ async def get_reco(
         raise UserNotFoundError(error_message=f"User {user_id} not found")
     if model is None:
         raise ModelNotFoundError(error_message=f"Model {model_name} not found")
-    else:
-        reco = model.recommend(user_id)
+    reco = model.recommend(user_id)
     return RecoResponse(user_id=user_id, items=reco)
 
 
