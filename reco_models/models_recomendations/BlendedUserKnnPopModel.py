@@ -16,16 +16,18 @@ class BlendedUserKnnPopular(BaseRecoModel):
             reco_list = self.user_knn_model.recommend(user_id)
             if len(reco_list) < 10:
                 new_reco = [*reco_list]
-                additional_reco = self.popular_model.recommend(user_id)
+                watched = self.user_knn_model.get_watched_dict()[user_id]
+                additional_reco = self.popular_model.get_most_popular_items()
 
                 for rec in additional_reco:
                     if len(new_reco) == 10:
                         break
-                    if rec not in new_reco:
+                    if rec not in new_reco and rec not in watched:
                         new_reco.append(rec)
 
                 reco_list = new_reco
             print("End in ", time.time() - start_time)
+            assert len(reco_list) != 10, "Not enough in reco list"
             return reco_list
 
         except KeyError as e:

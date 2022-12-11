@@ -115,3 +115,6 @@ class UserKnnModel(BaseRecoModel):
                     idf.iterrows()}
         return idf, idf_dict
 
+    def get_watched_dict(self):
+        return self.watched_dict
+

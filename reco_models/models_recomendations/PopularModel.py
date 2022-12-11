@@ -19,7 +19,7 @@ class PopularModel(BaseRecoModel):
         self.most_popular_items = list(self.pop.recommend(
             [0],
             dataset=self.dataset,
-            k=20,
+            k=300,
             filter_viewed=False)["item_id"])
 
     def recommend(self, user_id, filter_viewed=True, k=10):
