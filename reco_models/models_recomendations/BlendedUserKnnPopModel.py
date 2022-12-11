@@ -11,7 +11,7 @@ class BlendedUserKnnPopular(BaseRecoModel):
         self.popular_model = pop_model
 
     def recommend(self, user_id):
-        #start_time = time.time()
+        start_time = time.time()
         try:
             reco_list = self.user_knn_model.recommend(user_id)
             if len(reco_list) < 10:
@@ -25,7 +25,7 @@ class BlendedUserKnnPopular(BaseRecoModel):
                         new_reco.append(rec)
 
                 reco_list = new_reco
-            #print("End in ", time.time() - start_time)
+            print("End in ", time.time() - start_time)
             return reco_list
 
         except KeyError as e:
