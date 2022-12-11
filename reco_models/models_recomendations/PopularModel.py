@@ -16,6 +16,12 @@ class PopularModel(BaseRecoModel):
         interactions, users, items = prepare_kion_dataset()
         self.dataset = self.__prepare_dataset(interactions, items)
 
+        self.most_popular_items = list(self.pop.recommend(
+            [0],
+            dataset=self.dataset,
+            k=20,
+            filter_viewed=False)["item_id"])
+
     def recommend(self, user_id, filter_viewed=True, k=10):
         reco_list = list(self.pop.recommend(
             [user_id],
@@ -24,6 +30,9 @@ class PopularModel(BaseRecoModel):
             filter_viewed=filter_viewed)["item_id"])
 
         return reco_list
+
+    def get_most_popular_items(self):
+        return self.most_popular_items
 
     @staticmethod
     def __prepare_dataset(interactions, items):
