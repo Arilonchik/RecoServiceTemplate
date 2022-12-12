@@ -1,5 +1,6 @@
-from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 import pickle
+
+from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 
 
 class LightFMModel(BaseRecoModel):
@@ -8,7 +9,7 @@ class LightFMModel(BaseRecoModel):
         self.offline_model = pickle.load(open("./reco_models/models_raw/offline_lightfm.pkl", 'rb'))
         self.popular = pickle.load(open("./reco_models/models_raw/popular.pkl", 'rb'))
         
-    def recommend(self, user_id):
+    def recommend(self, user_id: int):
         try:
             return self.offline_model[user_id]
         except:
