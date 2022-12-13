@@ -20,4 +20,3 @@ class LightFMModel(BaseRecoModel):
         if recs:
             return recs
         return self.popular
-        
