@@ -1,19 +1,20 @@
 import dill
 import os
 import pandas as pd
-from collections import Counter
 import numpy as np
 
+from collections import Counter
+from typing import List
 
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 from reco_models.tools.utils import prepare_kion_dataset
 
 
 class UserKnnModel(BaseRecoModel):
-    def __init__(self, model_path):
+    def __init__(self, model_path: str):
         super().__init__()
         assert os.path.exists(model_path), "No model"
-        self.model = dill.load(open(model_path, 'rb'))
+        self.model = self.load_dill(model_path)
 
         self.dataset, users, items = prepare_kion_dataset()
 
@@ -33,7 +34,12 @@ class UserKnnModel(BaseRecoModel):
 
         self.mapper = self.generate_implicit_recs_mapper(N=50)
 
-    def recommend(self, user_id):
+    def load_dill(self, path: str):
+        with open(path, 'rb') as f:
+            model = dill.load(f)
+        return model
+
+    def recommend(self, user_id) -> List[int]:
         rco = pd.DataFrame({
             'user_id': [user_id]
         })
@@ -93,4 +99,3 @@ class UserKnnModel(BaseRecoModel):
 
     def get_watched_dict(self):
         return self.watched_dict
-

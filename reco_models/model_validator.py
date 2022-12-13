@@ -20,8 +20,5 @@ class ModelValidator:
             "blended_user_pop": self.blended_user_pop
         }
 
-    def get_reco_model(self, model_name):
-        if model_name not in self.model_names.keys():
-            return None
-        else:
-            return self.model_names[model_name]
+    def get_reco_model(self, model_name: str):
+        return self.model_names.get(model_name)

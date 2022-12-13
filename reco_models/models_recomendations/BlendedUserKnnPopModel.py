@@ -1,3 +1,4 @@
+from typing import List
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 from reco_models.models_recomendations.PopularModel import PopularModel
 from reco_models.models_recomendations.UserKnnModel import UserKnnModel
@@ -9,7 +10,7 @@ class BlendedUserKnnPopular(BaseRecoModel):
         self.user_knn_model = user_knn_model
         self.popular_model = pop_model
 
-    def recommend(self, user_id):
+    def recommend(self, user_id: int) -> List[int]:
         try:
             reco_list = self.user_knn_model.recommend(user_id)
             if len(reco_list) < 10:

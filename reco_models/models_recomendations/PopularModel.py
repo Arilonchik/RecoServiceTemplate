@@ -2,8 +2,10 @@ import dill
 import os
 import pandas as pd
 import numpy as np
+
 from scipy.stats import mode
 from rectools.dataset import Dataset
+from typing import List
 
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 from reco_models.tools.utils import prepare_kion_dataset
@@ -11,11 +13,11 @@ from reco_models.tools.utils import prepare_kion_dataset
 
 class PopularModel(BaseRecoModel):
 
-    def __init__(self, model_path, pop_type="simple"):
+    def __init__(self, model_path: str, pop_type: str = "simple"):
         super().__init__()
         if pop_type == "simple":
             assert os.path.exists(model_path), "No model"
-            self.pop = dill.load(open(model_path, 'rb'))
+            self.pop = self.load_dill(model_path)
             interactions, users, items = prepare_kion_dataset()
             self.dataset = self.__prepare_dataset(interactions, items)
 
@@ -36,12 +38,17 @@ class PopularModel(BaseRecoModel):
                 self.dataset.item_id_map.convert_to_external(item_set)
             )
 
-    def recommend(self, user_id, filter_viewed=True, k=10):
+    def load_dill(self, path: str):
+        with open(path, 'rb') as f:
+            model = dill.load(f)
+        return model
+
+    def recommend(self, user_id: int, filter_viewed=True, k=10) -> List[int]:
         reco_list = self.most_popular_items[0:10]
 
         return reco_list
 
-    def get_most_popular_items(self):
+    def get_most_popular_items(self) -> List[int]:
         return self.most_popular_items
 
     @staticmethod
