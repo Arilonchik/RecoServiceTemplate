@@ -7,7 +7,7 @@ from reco_models.models_recomendations.BlendedUserKnnPopModel import BlendedUser
 class ModelValidator:
     def __init__(self):
         self.plug_model = PlugModel()
-        self.popular_model = PopularModel()
+        self.popular_model = PopularModel(pop_type="zip")
         self.user_model = UserKnnModel()
         self.blended_user_pop = BlendedUserKnnPopular(self.user_model,
                                                self.popular_model)

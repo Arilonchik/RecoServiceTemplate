@@ -49,7 +49,8 @@ class UserKnnModel(BaseRecoModel):
             if similar >= 1:
                 continue
             for item_id in self.watched_dict[similar_user]:
-                if item_id in ban_items.keys():
+                if item_id in ban_items.keys() or\
+                   item_id in self.watched_dict[user_id]:
                     continue
                 ban_items[item_id] = None
                 rank_idf = similar * self.idf_dict[item_id]

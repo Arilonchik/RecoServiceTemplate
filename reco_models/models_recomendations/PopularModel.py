@@ -26,6 +26,8 @@ class PopularModel(BaseRecoModel):
                 filter_viewed=False)["item_id"])
 
         if pop_type == "zip":
+            interactions, users, items = prepare_kion_dataset()
+            self.dataset = self.__prepare_dataset(interactions, items)
             # get csr matrix from interactions
             matrix = self.dataset.get_user_item_matrix()
             item_set, covered_users = self.__get_top_items_covered_users(
@@ -35,12 +37,12 @@ class PopularModel(BaseRecoModel):
             )
 
     def recommend(self, user_id, filter_viewed=True, k=10):
-        reco_list = list(self.pop.recommend(
-            [user_id],
-            dataset=self.dataset,
-            k=k,
-            filter_viewed=filter_viewed)["item_id"])
-        #reco_list = self.most_popular_items
+        # reco_list = list(self.pop.recommend(
+        #     [user_id],
+        #     dataset=self.dataset,
+        #     k=k,
+        #     filter_viewed=filter_viewed)["item_id"])
+        reco_list = self.most_popular_items
 
         return reco_list
 
