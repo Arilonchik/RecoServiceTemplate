@@ -36,7 +36,10 @@ clean:
 isort_fix: .venv
 	isort $(PROJECT) $(TESTS)
 
-format: isort_fix
+black: .venv
+	black $(PROJECT)
+
+format: isort_fix black
 
 
 # Lint

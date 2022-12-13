@@ -50,14 +50,16 @@ async def health() -> str:
     path="/reco/{model_name}/{user_id}",
     tags=["Recommendations"],
     response_model=RecoResponse,
-    responses={404: {"description": "User/model not found"},
-               401: {"description": "Authorization error"}},
+    responses={
+        404: {"description": "User/model not found"},
+        401: {"description": "Authorization error"},
+    },
 )
 async def get_reco(
     request: Request,
     model_name: str,
     user_id: int,
-    api_key: APIKey = Depends(check_key)
+    api_key: APIKey = Depends(check_key),
 ) -> RecoResponse:
     app_logger.info(f"Request for model: {model_name}, user_id: {user_id}")
 
