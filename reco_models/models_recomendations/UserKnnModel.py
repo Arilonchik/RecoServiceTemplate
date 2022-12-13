@@ -1,11 +1,8 @@
-import pprint
-
 import dill
 import os
 import pandas as pd
 from collections import Counter
 import numpy as np
-import pprint
 
 
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
@@ -13,10 +10,10 @@ from reco_models.tools.utils import prepare_kion_dataset
 
 
 class UserKnnModel(BaseRecoModel):
-    def __init__(self):
+    def __init__(self, model_path):
         super().__init__()
-        assert os.path.exists("./reco_models/models_raw/userknn_50.dill"), "No model"
-        self.model = dill.load(open("./reco_models/models_raw/userknn_50.dill", 'rb'))
+        assert os.path.exists(model_path), "No model"
+        self.model = dill.load(open(model_path, 'rb'))
 
         self.dataset, users, items = prepare_kion_dataset()
 
@@ -49,8 +46,7 @@ class UserKnnModel(BaseRecoModel):
             if similar >= 1:
                 continue
             for item_id in self.watched_dict[similar_user]:
-                if item_id in ban_items.keys() or\
-                   item_id in self.watched_dict[user_id]:
+                if item_id in ban_items.keys():
                     continue
                 ban_items[item_id] = None
                 rank_idf = similar * self.idf_dict[item_id]
@@ -88,7 +84,8 @@ class UserKnnModel(BaseRecoModel):
                                      columns=['doc_freq']).reset_index()
         # num of documents = num of recommendation list = dataframe shape
         n = self.dataset.shape[0]
-        idf['idf'] = idf['doc_freq'].apply(lambda x: np.log((1 + n) / (1 + x) + 1))
+        idf['idf'] = idf['doc_freq'].apply(lambda x:
+                                           np.log((1 + n) / (1 + x) + 1))
 
         idf_dict = {items["index"]: items["idf"] for ind, items in
                     idf.iterrows()}

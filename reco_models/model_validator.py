@@ -7,8 +7,10 @@ from reco_models.models_recomendations.BlendedUserKnnPopModel import BlendedUser
 class ModelValidator:
     def __init__(self):
         self.plug_model = PlugModel()
-        self.popular_model = PopularModel(pop_type="zip")
-        self.user_model = UserKnnModel()
+        self.popular_model = PopularModel(
+            model_path="./reco_models/models_raw/pop.dill", pop_type="zip")
+        self.user_model = UserKnnModel(
+            model_path="./reco_models/models_raw/userknn_50.dill")
         self.blended_user_pop = BlendedUserKnnPopular(self.user_model,
                                                self.popular_model)
         self.model_names = {

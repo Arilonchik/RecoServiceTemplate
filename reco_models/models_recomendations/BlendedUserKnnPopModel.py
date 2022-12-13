@@ -1,7 +1,6 @@
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 from reco_models.models_recomendations.PopularModel import PopularModel
 from reco_models.models_recomendations.UserKnnModel import UserKnnModel
-import time
 
 
 class BlendedUserKnnPopular(BaseRecoModel):
@@ -31,10 +30,10 @@ class BlendedUserKnnPopular(BaseRecoModel):
                             new_reco.append(rec)
 
                 reco_list = new_reco
-            assert len(reco_list) == 10, f"Not enough in reco list, {len(reco_list)}"
+            assert len(reco_list) == 10, f"Not enough in reco list," \
+                                         f" {len(reco_list)}"
             return reco_list
 
-        except KeyError as e:
-            print("Cold user detected")
+        except KeyError:
             reco_list = self.popular_model.get_most_popular_items()[:10]
             return reco_list

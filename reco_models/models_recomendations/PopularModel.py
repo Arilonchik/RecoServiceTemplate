@@ -11,11 +11,11 @@ from reco_models.tools.utils import prepare_kion_dataset
 
 class PopularModel(BaseRecoModel):
 
-    def __init__(self, pop_type="simple"):
+    def __init__(self, model_path, pop_type="simple"):
         super().__init__()
         if pop_type == "simple":
-            assert os.path.exists("./reco_models/models_raw/pop.dill"), "No model"
-            self.pop = dill.load(open("./reco_models/models_raw/pop.dill", 'rb'))
+            assert os.path.exists(model_path), "No model"
+            self.pop = dill.load(open(model_path, 'rb'))
             interactions, users, items = prepare_kion_dataset()
             self.dataset = self.__prepare_dataset(interactions, items)
 
@@ -31,18 +31,13 @@ class PopularModel(BaseRecoModel):
             # get csr matrix from interactions
             matrix = self.dataset.get_user_item_matrix()
             item_set, covered_users = self.__get_top_items_covered_users(
-                matrix, n_users=90000)
+                matrix, n_users=900000)
             self.most_popular_items = list(
                 self.dataset.item_id_map.convert_to_external(item_set)
             )
 
     def recommend(self, user_id, filter_viewed=True, k=10):
-        # reco_list = list(self.pop.recommend(
-        #     [user_id],
-        #     dataset=self.dataset,
-        #     k=k,
-        #     filter_viewed=filter_viewed)["item_id"])
-        reco_list = self.most_popular_items
+        reco_list = self.most_popular_items[0:10]
 
         return reco_list
 
@@ -56,10 +51,10 @@ class PopularModel(BaseRecoModel):
 
         item_set = []
         covered_users = np.zeros(matrix.shape[0],
-                                 dtype=bool)  # true if a user has been checked already
-        while covered_users.sum() < n_users:  # stop if the number of checked users exceeds the limit
+                                 dtype=bool)
+        while covered_users.sum() < n_users:
             top_item = mode(matrix[~covered_users].indices)[0][
-                0]  # most frequent item among yet unchecked users
+                0]
             item_set.append(top_item)
             covered_users += np.maximum.reduceat(matrix.indices == top_item,
                                                  matrix.indptr[:-1],
