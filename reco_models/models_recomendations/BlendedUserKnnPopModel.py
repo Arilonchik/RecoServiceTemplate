@@ -11,7 +11,6 @@ class BlendedUserKnnPopular(BaseRecoModel):
         self.popular_model = pop_model
 
     def recommend(self, user_id):
-        start_time = time.time()
         try:
             reco_list = self.user_knn_model.recommend(user_id)
             if len(reco_list) < 10:
@@ -24,14 +23,18 @@ class BlendedUserKnnPopular(BaseRecoModel):
                         break
                     if rec not in new_reco and rec not in watched:
                         new_reco.append(rec)
+                if len(new_reco) < 10:
+                    for rec in additional_reco:
+                        if len(new_reco) == 10:
+                            break
+                        if rec not in new_reco:
+                            new_reco.append(rec)
 
                 reco_list = new_reco
-            print("End in ", time.time() - start_time)
-            assert len(reco_list) != 10, "Not enough in reco list"
+            assert len(reco_list) == 10, f"Not enough in reco list, {len(reco_list)}"
             return reco_list
 
         except KeyError as e:
             print("Cold user detected")
             reco_list = self.popular_model.get_most_popular_items()[:10]
-            #print("End in ", time.time() - start_time)
             return reco_list
