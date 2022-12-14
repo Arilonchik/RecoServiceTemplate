@@ -67,5 +67,6 @@ venv.bak/
 .mypy_cache/
 
 tmp.py
+reco_models/models_raw/
 
 
