@@ -6,9 +6,17 @@ from tqdm.auto import tqdm
 import warnings
 warnings.filterwarnings("ignore")
 from subprocess import Popen, PIPE
+from typing import Tuple
 
 
 from rectools import Columns
+
+
+class NotEnoughRecoError(Exception):
+    def __init__(self, reco_len, message="Not enough in reco list, "):
+        self.reco_len = reco_len
+        self.message = message + str(self.reco_len)
+        super().__init__(self.message)
 
 
 def download_dataset():
@@ -37,7 +45,7 @@ def unzip_dataset():
             print(line, end=" ")
 
 
-def read_dataset():
+def read_dataset() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     interactions = pd.read_csv('kion_train/interactions.csv')
     users = pd.read_csv('kion_train/users.csv')
     items = pd.read_csv('kion_train/items.csv')
@@ -52,7 +60,7 @@ def read_dataset():
     return interactions, users, items
 
 
-def prepare_kion_dataset():
+def prepare_kion_dataset() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if not os.path.exists("kion_train.zip"):
         download_dataset()
     if not os.path.exists("kion_train/interactions.csv") or\
@@ -60,7 +68,6 @@ def prepare_kion_dataset():
             not os.path.exists("kion_train/items.csv"):
         unzip_dataset()
 
-    print("Construct dataset")
     interactions, users, items = read_dataset()
 
     return interactions, users, items

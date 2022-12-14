@@ -4,14 +4,22 @@ import pandas as pd
 import numpy as np
 from scipy.stats import mode
 from rectools.dataset import Dataset
+from typing import List, Tuple
+from enum import Enum
 
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
 from reco_models.tools.utils import prepare_kion_dataset
 
 
+class PopularType(Enum):
+    SIMPLE = "simple"
+    ZIP = "zip"
+
+
 class PopularModel(BaseRecoModel):
 
-    def __init__(self, model_path, pop_type="simple"):
+    def __init__(self, model_path: str,
+                 pop_type: PopularType = PopularType.SIMPLE):
         super().__init__()
         if pop_type == "simple":
             assert os.path.exists(model_path), "No model"
@@ -36,16 +44,17 @@ class PopularModel(BaseRecoModel):
                 self.dataset.item_id_map.convert_to_external(item_set)
             )
 
-    def recommend(self, user_id, filter_viewed=True, k=10):
-        reco_list = self.most_popular_items[0:10]
+    def recommend(self, user_id: int, k: int = 10) -> List[int]:
+        reco_list = self.most_popular_items[:k]
 
         return reco_list
 
-    def get_most_popular_items(self):
+    def get_most_popular_items(self) -> List[int]:
         return self.most_popular_items
 
     @staticmethod
-    def __get_top_items_covered_users(matrix, n_users=1000):
+    def __get_top_items_covered_users(
+            matrix, n_users: int = 1000) -> Tuple[list, np.array]:
 
         assert matrix.format == 'csr'
 
@@ -62,7 +71,8 @@ class PopularModel(BaseRecoModel):
         return item_set, covered_users
 
     @staticmethod
-    def __prepare_dataset(interactions, items):
+    def __prepare_dataset(interactions: pd.DataFrame,
+                          items: pd.DataFrame) -> Dataset:
         _, bins = pd.qcut(items["release_year"], 10, retbins=True)
 
         year_feature = pd.DataFrame(

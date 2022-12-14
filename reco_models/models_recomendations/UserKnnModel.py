@@ -3,6 +3,9 @@ import os
 import pandas as pd
 from collections import Counter
 import numpy as np
+from typing import List
+from typing import Tuple
+from collections.abc import Callable
 
 
 from reco_models.models_recomendations.BaseRecoModel import BaseRecoModel
@@ -10,7 +13,7 @@ from reco_models.tools.utils import prepare_kion_dataset
 
 
 class UserKnnModel(BaseRecoModel):
-    def __init__(self, model_path):
+    def __init__(self, model_path: str, nn: int = 50) -> None:
         super().__init__()
         assert os.path.exists(model_path), "No model"
         self.model = dill.load(open(model_path, 'rb'))
@@ -31,9 +34,9 @@ class UserKnnModel(BaseRecoModel):
         self.items_inv_mapping = dict(enumerate(self.dataset['item_id'].unique()))
         self.items_mapping = {v: k for k, v in self.items_inv_mapping.items()}
 
-        self.mapper = self.generate_implicit_recs_mapper(N=50)
+        self.mapper = self.generate_implicit_recs_mapper(N=nn)
 
-    def recommend(self, user_id):
+    def recommend(self, user_id: int) -> List[int]:
         rco = pd.DataFrame({
             'user_id': [user_id]
         })
@@ -60,7 +63,7 @@ class UserKnnModel(BaseRecoModel):
 
         return reco_list
 
-    def generate_implicit_recs_mapper(self, N=50):
+    def generate_implicit_recs_mapper(self, N:int) -> Callable:
         def _recs_mapper(user):
             user_id = self.users_mapping[user]
             recs = self.model.similar_items(user_id, N=N)
@@ -71,14 +74,14 @@ class UserKnnModel(BaseRecoModel):
 
         return _recs_mapper
 
-    def prepare_watched(self):
+    def prepare_watched(self) -> Tuple[pd.DataFrame, dict]:
         watched = self.dataset.groupby('user_id').agg({'item_id': list})
 
         watched_dict = {user_id: items["item_id"] for user_id, items
                         in watched.iterrows()}
         return watched, watched_dict
 
-    def __prepare_idf(self):
+    def __prepare_idf(self) -> Tuple[pd.DataFrame, dict]:
         cnt = Counter(self.dataset['item_id'].values)
         idf = pd.DataFrame.from_dict(cnt, orient='index',
                                      columns=['doc_freq']).reset_index()
@@ -91,6 +94,6 @@ class UserKnnModel(BaseRecoModel):
                     idf.iterrows()}
         return idf, idf_dict
 
-    def get_watched_dict(self):
+    def get_watched_dict(self) -> dict:
         return self.watched_dict
 
