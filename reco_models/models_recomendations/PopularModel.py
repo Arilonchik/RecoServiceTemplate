@@ -21,7 +21,9 @@ class PopularModel(BaseRecoModel):
     def __init__(self, model_path: str,
                  pop_type: PopularType = PopularType.SIMPLE):
         super().__init__()
+
         if pop_type == "simple":
+            self.mp_items = 1298
             assert os.path.exists(model_path), "No model"
             self.pop = dill.load(open(model_path, 'rb'))
             interactions, users, items = prepare_kion_dataset()
@@ -30,16 +32,17 @@ class PopularModel(BaseRecoModel):
             self.most_popular_items = list(self.pop.recommend(
                 [0],
                 dataset=self.dataset,
-                k=1298,
+                k=self.mp_items,
                 filter_viewed=False)["item_id"])
 
         if pop_type == "zip":
+            self.n_users = 900000
             interactions, users, items = prepare_kion_dataset()
             self.dataset = self.__prepare_dataset(interactions, items)
             # get csr matrix from interactions
             matrix = self.dataset.get_user_item_matrix()
             item_set, covered_users = self.__get_top_items_covered_users(
-                matrix, n_users=900000)
+                matrix, n_users=self.n_users)
             self.most_popular_items = list(
                 self.dataset.item_id_map.convert_to_external(item_set)
             )
